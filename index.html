@@ -1,140 +1,193 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Rise Up ID Card Generator</title>
-<style>
-  body {
-    font-family: Arial, sans-serif;
-    background: #f0f2f5;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    padding: 20px;
-  }
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Rise Up ID Card Generator</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f0f2f5;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 20px;
+        }
+        h2 { color: #1e5631; }
+        
+        .container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+            justify-content: center;
+            max-width: 1000px;
+            width: 100%;
+        }
 
-  h1 {
-    color: #2e7d32;
-  }
+        .form-section {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+            flex: 1;
+            min-width: 300px;
+        }
 
-  form {
-    display: flex;
-    flex-direction: column;
-    width: 300px;
-    gap: 10px;
-    margin-bottom: 20px;
-  }
+        .preview-section {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-width: 300px;
+        }
 
-  input, button {
-    padding: 10px;
-    font-size: 16px;
-  }
+        input {
+            width: 100%;
+            padding: 10px;
+            margin: 10px 0;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            box-sizing: border-box;
+        }
 
-  #idCard {
-    border: 2px solid #2e7d32;
-    border-radius: 10px;
-    margin-top: 10px;
-  }
+        button {
+            width: 100%;
+            padding: 12px;
+            background-color: #2e7d32;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            margin-top: 10px;
+        }
 
-  #downloadBtn {
-    margin-top: 10px;
-    background: #2e7d32;
-    color: white;
-    border: none;
-    cursor: pointer;
-    padding: 10px;
-    font-size: 16px;
-  }
+        button:hover { background-color: #1b5e20; }
+        
+        #downloadBtn {
+            background-color: #d32f2f;
+            display: none; /* Initially hidden */
+        }
 
-  #downloadBtn:hover {
-    background: #1b5e20;
-  }
-</style>
+        canvas {
+            max-width: 100%;
+            height: auto;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+            border-radius: 8px;
+        }
+    </style>
 </head>
 <body>
 
-<h1>Rise Up ID Card Generator</h1>
+    <h2>RISE UP ID Card Generator</h2>
 
-<form id="idForm">
-  <input type="text" id="name" placeholder="Name" required>
-  <input type="text" id="role" placeholder="Role (Employee/Manager/HR/Leader)" required>
-  <input type="text" id="code" placeholder="Leader Code" required>
-  <input type="text" id="phone" placeholder="Phone" required>
-  <input type="date" id="date" placeholder="Date of Join" required>
-  <button type="submit">Generate ID Card</button>
-</form>
+    <div class="container">
+        <div class="form-section">
+            <h3>Enter Details</h3>
+            <label>Name</label>
+            <input type="text" id="name" placeholder="Ex: Rahul Sharma">
 
-<canvas id="idCard" width="500" height="300"></canvas>
-<button id="downloadBtn">Download ID Card</button>
+            <label>Role</label>
+            <input type="text" id="role" placeholder="Ex: TEAM LEADER">
 
-<script>
-const form = document.getElementById("idForm");
-const canvas = document.getElementById("idCard");
-const ctx = canvas.getContext("2d");
-const downloadBtn = document.getElementById("downloadBtn");
+            <label>Leader Code</label>
+            <input type="text" id="code" placeholder="Ex: RU-12345">
 
-// Load logo
-const logo = new Image();
-logo.src = "ru_logo.png"; // Logo file should be in same folder
-logo.onload = function() {
-    drawID(); // Draw initial empty card
-}
+            <label>Phone</label>
+            <input type="text" id="phone" placeholder="Ex: +91 98765 43210">
 
-function drawID() {
-  // Clear canvas
-  ctx.clearRect(0, 0, canvas.width, canvas.height);
+            <label>Date of Join</label>
+            <input type="text" id="date" placeholder="Ex: 12 Oct 2025">
 
-  // Background white
-  ctx.fillStyle = "#ffffff";
-  ctx.fillRect(0, 0, canvas.width, canvas.height);
+            <button onclick="generateCard()">Generate ID Card</button>
+            <button id="downloadBtn" onclick="downloadCard()">Download Image</button>
+        </div>
 
-  // Top gradient bar
-  const grad = ctx.createLinearGradient(0, 0, canvas.width, 0);
-  grad.addColorStop(0, "#2e7d32");
-  grad.addColorStop(1, "#66bb6a");
-  ctx.fillStyle = grad;
-  ctx.fillRect(0, 0, canvas.width, 60);
+        <div class="preview-section">
+            <h3>Preview</h3>
+            <canvas id="cardCanvas"></canvas>
+        </div>
+    </div>
 
-  // RU Logo
-  ctx.drawImage(logo, 20, 10, 40, 40);
+    <script>
+        // Setup Canvas
+        const canvas = document.getElementById('cardCanvas');
+        const ctx = canvas.getContext('2d');
+        let imageLoaded = false;
 
-  // Company name text
-  ctx.fillStyle = "#ffffff";
-  ctx.font = "bold 16px Arial";
-  ctx.fillText("Rise Up - Secure Earning", 70, 40);
+        // Image Load karo (Yahan 'template.png' wahi image honi chahiye jo tum clean karke folder me rakhoge)
+        const template = new Image();
+        template.src = 'template.png'; 
+        
+        template.onload = function() {
+            canvas.width = template.width;
+            canvas.height = template.height;
+            drawBaseImage();
+            imageLoaded = true;
+        };
 
-  // ID card info
-  ctx.fillStyle = "#000000";
-  ctx.font = "bold 20px Arial";
+        function drawBaseImage() {
+            ctx.drawImage(template, 0, 0);
+        }
 
-  const name = document.getElementById("name") ? document.getElementById("name").value : "";
-  const role = document.getElementById("role") ? document.getElementById("role").value : "";
-  const code = document.getElementById("code") ? document.getElementById("code").value : "";
-  const phone = document.getElementById("phone") ? document.getElementById("phone").value : "";
-  const date = document.getElementById("date") ? document.getElementById("date").value : "";
+        function generateCard() {
+            if (!imageLoaded) {
+                alert("Template image load nahi hui hai. Please check file name.");
+                return;
+            }
 
-  ctx.fillText("Name: " + name, 20, 100);
-  ctx.fillText("Role: " + role, 20, 140);
-  ctx.fillText("Leader Code: " + code, 20, 180);
-  ctx.fillText("Phone: " + phone, 20, 220);
-  ctx.fillText("Date of Join: " + date, 20, 260);
-}
+            // Reset Canvas with clean image
+            drawBaseImage();
 
-// Form submit
-form.addEventListener("submit", (e) => {
-  e.preventDefault();
-  drawID();
-});
+            // Get Values
+            const name = document.getElementById('name').value || "MEMBER NAME";
+            const role = document.getElementById('role').value || "ROLE";
+            const code = document.getElementById('code').value || "XXXXX";
+            const phone = document.getElementById('phone').value || "XXXXXXXXXX";
+            const date = document.getElementById('date').value || "DD/MM/YYYY";
 
-// Download button
-downloadBtn.addEventListener("click", () => {
-  const link = document.createElement("a");
-  link.download = "ID_Card.png";
-  link.href = canvas.toDataURL("image/png");
-  link.click();
-});
-</script>
+            // --- TEXT SETTINGS (Yahan positions adjust karni pad sakti hain) ---
 
+            // 1. NAME (Center Bold)
+            ctx.font = "bold 60px Arial"; // Size kam jyada yahan se karein
+            ctx.fillStyle = "black";
+            ctx.textAlign = "center";
+            // 'canvas.width / 2' means horizontal center. '1050' is approx vertical position based on your image
+            ctx.fillText(name, canvas.width / 2, 1050); 
+
+            // 2. ROLE (White text inside green ribbon)
+            ctx.font = "bold 40px Arial"; 
+            ctx.fillStyle = "white";
+            ctx.textAlign = "center";
+            ctx.fillText(role, canvas.width / 2, 1180); // 1180 height adjust karein ribbon ke liye
+
+            // 3. DETAILS (Left Aligned)
+            ctx.textAlign = "left";
+            ctx.fillStyle = "black";
+            ctx.font = "bold 35px Courier New"; // Thoda monospaced font detail ke liye
+
+            // X coordinate (horizontal) thoda right shift kiya hai taki align ho
+            const startX = 200; 
+            
+            // Leader Code
+            ctx.fillText(`Leader code : ${code}`, startX, 1350);
+            
+            // Phone
+            ctx.fillText(`PHONE       : ${phone}`, startX, 1420);
+
+            // Date
+            ctx.fillText(`Date of join : ${date}`, startX, 1490);
+
+            // Show Download Button
+            document.getElementById('downloadBtn').style.display = 'block';
+        }
+
+        function downloadCard() {
+            const link = document.createElement('a');
+            link.download = 'ID_Card.png';
+            link.href = canvas.toDataURL();
+            link.click();
+        }
+    </script>
 </body>
 </html>
