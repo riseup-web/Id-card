@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Rise Up - Pro ID Generator</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+    <style>
+        body { background: #121212; color: white; font-family: 'Arial', sans-serif; display: flex; justify-content: center; align-items: flex-start; padding: 50px; gap: 50px; }
+        
+        /* Input Form Panel */
+        .panel { background: #1e1e1e; padding: 25px; border-radius: 15px; width: 320px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
+        h2 { color: #00d2ff; margin-top: 0; }
+        input, select { width: 100%; padding: 12px; margin: 10px 0; border-radius: 8px; border: 1px solid #333; background: #252525; color: white; outline: none; }
+        button { width: 100%; padding: 15px; border-radius: 8px; border: none; background: #00d2ff; color: #000; font-weight: bold; cursor: pointer; font-size: 16px; margin-top: 10px; }
+        button:hover { background: #91eaff; }
+
+        /* ID Card Design */
+        #id-card {
+            width: 350px; height: 500px;
+            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 50%, #000428 100%);
+            border-radius: 25px; position: relative; overflow: hidden;
+            box-shadow: 0 20px 50px rgba(0,0,0,0.8); border: 1px solid rgba(255,255,255,0.1);
+        }
+        .card-top { display: flex; justify-content: space-between; padding: 25px; align-items: center; }
+        .rise-up-logo { font-size: 26px; font-weight: 900; font-style: italic; letter-spacing: -1px; }
+        .id-label { font-size: 10px; text-transform: uppercase; letter-spacing: 2px; opacity: 0.7; }
+        
+        .main-logo-box {
+            width: 110px; height: 110px; background: rgba(255,255,255,0.1); 
+            border: 2px solid rgba(255,255,255,0.3); border-radius: 50%; 
+            margin: 10px auto; display: flex; align-items: center; justify-content: center;
+            font-size: 40px; font-weight: bold; color: #00d2ff; backdrop-filter: blur(5px);
+        }
+
+        .name-area { margin-top: 20px; text-align: center; }
+        .emp-name { font-size: 28px; font-weight: bold; margin-bottom: 5px; }
+        .emp-role { 
+            background: #f39c12; color: #000; padding: 5px 25px; 
+            border-radius: 50px; font-size: 14px; font-weight: bold; display: inline-block;
+        }
+
+        .info-section {
+            background: rgba(0,0,0,0.3); margin: 30px 25px; padding: 15px;
+            border-radius: 15px; text-align: left; font-size: 14px; border: 1px solid rgba(255,255,255,0.05);
+        }
+        .info-row { margin: 5px 0; opacity: 0.9; }
+
+        .card-bottom { text-align: center; margin-top: -10px; }
+        #qrcode { background: white; padding: 5px; display: inline-block; border-radius: 8px; }
+        .scan-text { font-size: 10px; margin-top: 5px; opacity: 0.6; text-transform: uppercase; }
+    </style>
+</head>
+<body>
+
+<div class="panel">
+    <h2>Rise Up Admin</h2>
+    <input type="text" id="inName" placeholder="Employee Name" oninput="sync()">
+    <input type="text" id="inPhone" placeholder="Mobile Number" oninput="sync()">
+    <input type="text" id="inCode" placeholder="Leader Code" oninput="sync()">
+    <select id="inRole" onchange="sync()">
+        <option value="Employee">Employee</option>
+        <option value="Manager">Manager</option>
+        <option value="Leader">Leader</option>
+        <option value="HR">HR</option>
+        <option value="Campaign Expert">Campaign Expert</option>
+    </select>
+    <button onclick="download()">Download PNG</button>
+</div>
+
+<div id="id-card">
+    <div class="card-top">
+        <div class="rise-up-logo">RISE UP</div>
+        <div class="id-label">Official ID</div>
+    </div>
+
+    <div class="main-logo-box">RU</div>
+
+    <div class="name-area">
+        <div class="emp-name" id="dName">AKASH KOHLI</div>
+        <div class="emp-role" id="dRole">EMPLOYEE</div>
+    </div>
+
+    <div class="info-section">
+        <div class="info-row"><strong>ID:</strong> RU-8968</div>
+        <div class="info-row"><strong>Leader Code:</strong> <span id="dCode">LDR-46117</span></div>
+        <div class="info-row"><strong>Phone:</strong> <span id="dPhone">+91 89681XXXXX</span></div>
+    </div>
+
+    <div class="card-bottom">
+        <div id="qrcode"></div>
+        <div class="scan-text">Scan to Verify Employee</div>
+    </div>
+</div>
+
+<script>
+    // QR Setup
+    var qrcode = new QRCode(document.getElementById("qrcode"), {
+        text: "https://riseup-web.github.io/Riseup/",
+        width: 60, height: 60,
+        colorDark : "#000000", colorLight : "#ffffff"
+    });
+
+    function sync() {
+        document.getElementById('dName').innerText = document.getElementById('inName').value || "NAME HERE";
+        document.getElementById('dPhone').innerText = document.getElementById('inPhone').value || "+91 0000000000";
+        document.getElementById('dCode').innerText = document.getElementById('inCode').value || "LDR-000";
+        document.getElementById('dRole').innerText = document.getElementById('inRole').value.toUpperCase();
+    }
+
+    function download() {
+        const card = document.getElementById('id-card');
+        html2canvas(card, { scale: 4, backgroundColor: null }).then(canvas => {
+            let link = document.createElement('a');
+            link.download = document.getElementById('inName').value + '_RiseUp.png';
+            link.href = canvas.toDataURL("image/png");
+            link.click();
+        });
+    }
+</script>
+
+</body>
+  </html>
+  
