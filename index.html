@@ -1,148 +1,139 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Rise Up - Ultra Pro ID Gen</title>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
-    <style>
-        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&display=swap');
-        
-        body { background: #0a0a0c; color: white; font-family: 'Inter', sans-serif; display: flex; flex-direction: column; align-items: center; padding: 20px; margin: 0; }
-        
-        .panel { background: #16161a; padding: 25px; border-radius: 20px; width: 100%; max-width: 380px; box-shadow: 0 15px-35px rgba(0,0,0,0.7); margin-bottom: 40px; border: 1px solid #222; box-sizing: border-box; }
-        h2 { color: #00d2ff; margin-bottom: 20px; font-weight: 900; text-align: center; letter-spacing: 1px; }
-        input, select { width: 100%; padding: 14px; margin: 10px 0; border-radius: 12px; border: 1px solid #333; background: #1f1f23; color: white; outline: none; font-size: 15px; }
-        button { width: 100%; padding: 16px; border-radius: 12px; border: none; background: linear-gradient(90deg, #00d2ff, #3a7bd5); color: white; font-weight: bold; cursor: pointer; font-size: 16px; margin-top: 15px; transition: 0.3s; box-shadow: 0 4px 15px rgba(0, 210, 255, 0.3); }
-        button:active { transform: scale(0.98); }
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Rise Up ID Card Generator</title>
+<style>
+  body {
+    font-family: Arial, sans-serif;
+    background: #f0f2f5;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 20px;
+  }
 
-        /* Card Container */
-        .card-wrapper { padding: 10px; border-radius: 35px; background: rgba(255,255,255,0.05); }
+  h1 {
+    color: #2e7d32;
+  }
 
-        /* THE PREMIUM ID CARD */
-        #id-card {
-            width: 360px; height: 520px;
-            background: radial-gradient(circle at top right, #3d1b5d, #1e3c72, #060c1d);
-            border-radius: 30px; position: relative; overflow: hidden;
-            border: 1px solid rgba(255,255,255,0.15);
-            display: flex; flex-direction: column; align-items: center;
-        }
+  form {
+    display: flex;
+    flex-direction: column;
+    width: 300px;
+    gap: 10px;
+    margin-bottom: 20px;
+  }
 
-        /* Glossy Overlay */
-        #id-card::before {
-            content: ""; position: absolute; top: -50%; left: -50%; width: 200%; height: 200%;
-            background: linear-gradient(45deg, transparent, rgba(255,255,255,0.05), transparent);
-            transform: rotate(30deg); pointer-events: none;
-        }
+  input, button {
+    padding: 10px;
+    font-size: 16px;
+  }
 
-        .card-header { width: 100%; display: flex; justify-content: space-between; padding: 30px 25px 10px; box-sizing: border-box; align-items: center; }
-        .brand { font-size: 26px; font-weight: 900; font-style: italic; letter-spacing: -1px; background: linear-gradient(#fff, #aaa); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
-        .label { font-size: 10px; font-weight: 700; letter-spacing: 3px; opacity: 0.6; color: #fff; }
+  #idCard {
+    border: 2px solid #2e7d32;
+    border-radius: 10px;
+    margin-top: 10px;
+  }
 
-        .logo-ring {
-            width: 110px; height: 110px; border-radius: 50%; 
-            background: rgba(255,255,255,0.03); border: 2px solid rgba(255,255,255,0.1);
-            display: flex; align-items: center; justify-content: center; margin: 15px 0;
-            box-shadow: 0 0 30px rgba(0, 210, 255, 0.1); position: relative;
-        }
-        .logo-ring span { font-size: 44px; font-weight: 900; color: #fff; text-shadow: 0 0 15px rgba(0,210,255,0.5); }
+  #downloadBtn {
+    margin-top: 10px;
+    background: #2e7d32;
+    color: white;
+    border: none;
+    cursor: pointer;
+    padding: 10px;
+    font-size: 16px;
+  }
 
-        .name-container { text-align: center; margin-bottom: 20px; }
-        .name-text { font-size: 28px; font-weight: 700; margin: 0; letter-spacing: 0.5px; }
-        .role-badge { 
-            margin-top: 8px; background: #ff9f43; color: #000; padding: 6px 25px; 
-            border-radius: 50px; font-size: 13px; font-weight: 800; display: inline-block;
-            box-shadow: 0 4px 10px rgba(255, 159, 67, 0.3);
-        }
-
-        .data-strip {
-            width: 85%; background: rgba(255,255,255,0.07); border: 1px solid rgba(255,255,255,0.1);
-            border-radius: 15px; padding: 15px; backdrop-filter: blur(10px);
-            text-align: left; margin-bottom: 25px;
-        }
-        .data-row { font-size: 14px; margin: 5px 0; color: rgba(255,255,255,0.8); }
-        .data-row strong { color: #00d2ff; margin-right: 5px; }
-
-        .qr-section { display: flex; flex-direction: column; align-items: center; }
-        #qrcode { background: #fff; padding: 6px; border-radius: 10px; box-shadow: 0 0 20px rgba(0,0,0,0.5); }
-        .verify-text { font-size: 9px; margin-top: 10px; letter-spacing: 2px; opacity: 0.5; font-weight: bold; }
-    </style>
+  #downloadBtn:hover {
+    background: #1b5e20;
+  }
+</style>
 </head>
 <body>
 
-<div class="panel">
-    <h2>RISE UP ADMIN</h2>
-    <input type="text" id="inName" placeholder="Enter Full Name" oninput="sync()">
-    <input type="text" id="inPhone" placeholder="Mobile Number" oninput="sync()">
-    <input type="text" id="inCode" placeholder="Leader Code" oninput="sync()">
-    <select id="inRole" onchange="sync()">
-        <option value="Employee">Employee</option>
-        <option value="Manager">Manager</option>
-        <option value="Leader">Leader</option>
-        <option value="HR">HR</option>
-        <option value="Campaign Expert">Campaign Expert</option>
-    </select>
-    <button onclick="download()">DOWNLOAD ULTRA HD PNG</button>
-</div>
+<h1>Rise Up ID Card Generator</h1>
 
-<div class="card-wrapper">
-    <div id="id-card">
-        <div class="card-header">
-            <div class="brand">RISE UP</div>
-            <div class="label">OFFICIAL ID</div>
-        </div>
+<form id="idForm">
+  <input type="text" id="name" placeholder="Name" required>
+  <input type="text" id="role" placeholder="Role (Employee/Manager/HR/Leader)" required>
+  <input type="text" id="code" placeholder="Leader Code" required>
+  <input type="text" id="phone" placeholder="Phone" required>
+  <input type="date" id="date" placeholder="Date of Join" required>
+  <button type="submit">Generate ID Card</button>
+</form>
 
-        <div class="logo-ring">
-            <span>RU</span>
-        </div>
-
-        <div class="name-container">
-            <div class="name-text" id="dName">AKASH KOHLI</div>
-            <div class="role-badge" id="dRole">EMPLOYEE</div>
-        </div>
-
-        <div class="data-strip">
-            <div class="data-row"><strong>ID:</strong> RU-8968</div>
-            <div class="data-row"><strong>Leader Code:</strong> <span id="dCode">LDR-46117</span></div>
-            <div class="data-row"><strong>Contact:</strong> <span id="dPhone">+91 89681XXXXX</span></div>
-        </div>
-
-        <div class="qr-section">
-            <div id="qrcode"></div>
-            <div class="verify-text">SCAN TO VERIFY EMPLOYEE</div>
-        </div>
-    </div>
-</div>
+<canvas id="idCard" width="500" height="300"></canvas>
+<button id="downloadBtn">Download ID Card</button>
 
 <script>
-    var qrcode = new QRCode(document.getElementById("qrcode"), {
-        text: "https://riseup-web.github.io/Riseup/",
-        width: 65, height: 65,
-        colorDark : "#000", colorLight : "#fff"
-    });
+const form = document.getElementById("idForm");
+const canvas = document.getElementById("idCard");
+const ctx = canvas.getContext("2d");
+const downloadBtn = document.getElementById("downloadBtn");
 
-    function sync() {
-        document.getElementById('dName').innerText = document.getElementById('inName').value || "AKASH KOHLI";
-        document.getElementById('dPhone').innerText = document.getElementById('inPhone').value || "+91 89681XXXXX";
-        document.getElementById('dCode').innerText = document.getElementById('inCode').value || "LDR-46117";
-        document.getElementById('dRole').innerText = document.getElementById('inRole').value.toUpperCase();
-    }
+// Load logo
+const logo = new Image();
+logo.src = "ru_logo.png"; // Logo file should be in same folder
+logo.onload = function() {
+    drawID(); // Draw initial empty card
+}
 
-    function download() {
-        const card = document.getElementById('id-card');
-        html2canvas(card, { 
-            scale: 5, // Extra High Quality
-            useCORS: true,
-            backgroundColor: null,
-            borderRadius: 30
-        }).then(canvas => {
-            let link = document.createElement('a');
-            link.download = (document.getElementById('inName').value || 'RiseUp_ID') + '.png';
-            link.href = canvas.toDataURL("image/png");
-            link.click();
-        });
-    }
+function drawID() {
+  // Clear canvas
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+  // Background white
+  ctx.fillStyle = "#ffffff";
+  ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+  // Top gradient bar
+  const grad = ctx.createLinearGradient(0, 0, canvas.width, 0);
+  grad.addColorStop(0, "#2e7d32");
+  grad.addColorStop(1, "#66bb6a");
+  ctx.fillStyle = grad;
+  ctx.fillRect(0, 0, canvas.width, 60);
+
+  // RU Logo
+  ctx.drawImage(logo, 20, 10, 40, 40);
+
+  // Company name text
+  ctx.fillStyle = "#ffffff";
+  ctx.font = "bold 16px Arial";
+  ctx.fillText("Rise Up - Secure Earning", 70, 40);
+
+  // ID card info
+  ctx.fillStyle = "#000000";
+  ctx.font = "bold 20px Arial";
+
+  const name = document.getElementById("name") ? document.getElementById("name").value : "";
+  const role = document.getElementById("role") ? document.getElementById("role").value : "";
+  const code = document.getElementById("code") ? document.getElementById("code").value : "";
+  const phone = document.getElementById("phone") ? document.getElementById("phone").value : "";
+  const date = document.getElementById("date") ? document.getElementById("date").value : "";
+
+  ctx.fillText("Name: " + name, 20, 100);
+  ctx.fillText("Role: " + role, 20, 140);
+  ctx.fillText("Leader Code: " + code, 20, 180);
+  ctx.fillText("Phone: " + phone, 20, 220);
+  ctx.fillText("Date of Join: " + date, 20, 260);
+}
+
+// Form submit
+form.addEventListener("submit", (e) => {
+  e.preventDefault();
+  drawID();
+});
+
+// Download button
+downloadBtn.addEventListener("click", () => {
+  const link = document.createElement("a");
+  link.download = "ID_Card.png";
+  link.href = canvas.toDataURL("image/png");
+  link.click();
+});
 </script>
 
 </body>
