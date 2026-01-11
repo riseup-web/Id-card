@@ -3,188 +3,154 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Rise Up ID Card Generator</title>
+    <title>Rise Up ID Card Generator (Smart Edit)</title>
     <style>
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background-color: #f0f2f5;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            padding: 20px;
-        }
-        h2 { color: #1e5631; }
+        body { font-family: sans-serif; background-color: #222; color: white; display: flex; flex-direction: column; align-items: center; padding: 20px; }
+        h2 { color: #4CAF50; }
+        .main-container { display: flex; flex-wrap: wrap; gap: 20px; justify-content: center; width: 100%; max-width: 1200px; }
         
-        .container {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 20px;
-            justify-content: center;
-            max-width: 1000px;
-            width: 100%;
-        }
+        /* Left Side: Controls */
+        .controls { background: #333; padding: 20px; border-radius: 10px; flex: 1; min-width: 320px; max-height: 90vh; overflow-y: auto; }
+        
+        /* Right Side: Preview */
+        .preview { flex: 1; display: flex; flex-direction: column; align-items: center; min-width: 320px; }
+        canvas { max-width: 100%; height: auto; border: 2px solid #555; border-radius: 8px; background: #fff; }
 
-        .form-section {
-            background: white;
-            padding: 20px;
-            border-radius: 10px;
-            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
-            flex: 1;
-            min-width: 300px;
-        }
+        label { display: block; margin-top: 10px; font-size: 14px; color: #ddd; }
+        input[type="text"] { width: 100%; padding: 8px; margin-top: 5px; background: #444; border: 1px solid #555; color: white; border-radius: 4px; }
+        
+        /* Range Sliders */
+        .slider-group { background: #444; padding: 10px; margin-top: 10px; border-radius: 5px; border-left: 4px solid #4CAF50; }
+        .slider-group h4 { margin: 0 0 10px 0; color: #81c784; font-size: 16px; }
+        input[type="range"] { width: 100%; cursor: pointer; }
+        .val-display { float: right; font-size: 12px; color: #aaa; }
 
-        .preview-section {
-            flex: 1;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            min-width: 300px;
-        }
-
-        input {
-            width: 100%;
-            padding: 10px;
-            margin: 10px 0;
-            border: 1px solid #ccc;
-            border-radius: 5px;
-            box-sizing: border-box;
-        }
-
-        button {
-            width: 100%;
-            padding: 12px;
-            background-color: #2e7d32;
-            color: white;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-            font-size: 16px;
-            margin-top: 10px;
-        }
-
+        button { width: 100%; padding: 15px; background-color: #2e7d32; color: white; border: none; border-radius: 5px; cursor: pointer; font-size: 18px; margin-top: 20px; font-weight: bold; }
         button:hover { background-color: #1b5e20; }
-        
-        #downloadBtn {
-            background-color: #d32f2f;
-            display: none; /* Initially hidden */
-        }
-
-        canvas {
-            max-width: 100%;
-            height: auto;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.2);
-            border-radius: 8px;
-        }
+        .download-btn { background-color: #d32f2f; display: none; }
     </style>
 </head>
 <body>
 
-    <h2>RISE UP ID Card Generator</h2>
+    <h2>Rise Up ID Editor</h2>
 
-    <div class="container">
-        <div class="form-section">
-            <h3>Enter Details</h3>
-            <label>Name</label>
-            <input type="text" id="name" placeholder="Ex: Rahul Sharma">
+    <div class="main-container">
+        <div class="controls">
+            <h3>1. Enter Data</h3>
+            <label>Name</label><input type="text" id="name" value="Rahul Sharma" oninput="draw()">
+            <label>Role</label><input type="text" id="role" value="TEAM LEADER" oninput="draw()">
+            <label>Leader Code</label><input type="text" id="code" value="RU-12345" oninput="draw()">
+            <label>Phone</label><input type="text" id="phone" value="+91 98765 43210" oninput="draw()">
+            <label>Date of Join</label><input type="text" id="date" value="12 Oct 2025" oninput="draw()">
 
-            <label>Role</label>
-            <input type="text" id="role" placeholder="Ex: TEAM LEADER">
+            <h3>2. Adjust Positions (Setting)</h3>
+            
+            <div class="slider-group">
+                <h4>Name Position & Size <span id="nameYVal" class="val-display"></span></h4>
+                <label>Up / Down</label>
+                <input type="range" id="nameY" min="0" max="2000" value="1060" oninput="draw()">
+                <label>Font Size</label>
+                <input type="range" id="nameSize" min="20" max="150" value="80" oninput="draw()">
+            </div>
 
-            <label>Leader Code</label>
-            <input type="text" id="code" placeholder="Ex: RU-12345">
+            <div class="slider-group" style="border-left-color: #64b5f6;">
+                <h4>Role Position <span id="roleYVal" class="val-display"></span></h4>
+                <label>Up / Down</label>
+                <input type="range" id="roleY" min="0" max="2000" value="1220" oninput="draw()">
+                <label>Font Size</label>
+                <input type="range" id="roleSize" min="20" max="100" value="45" oninput="draw()">
+            </div>
 
-            <label>Phone</label>
-            <input type="text" id="phone" placeholder="Ex: +91 98765 43210">
+            <div class="slider-group" style="border-left-color: #ffb74d;">
+                <h4>Details (Phone/Code) <span id="detailYVal" class="val-display"></span></h4>
+                <label>Up / Down (Start Position)</label>
+                <input type="range" id="detailY" min="0" max="2000" value="1380" oninput="draw()">
+                <label>Left / Right</label>
+                <input type="range" id="detailX" min="0" max="1000" value="150" oninput="draw()">
+                <label>Line Gap (Gap between lines)</label>
+                <input type="range" id="lineGap" min="10" max="200" value="70" oninput="draw()">
+            </div>
 
-            <label>Date of Join</label>
-            <input type="text" id="date" placeholder="Ex: 12 Oct 2025">
-
-            <button onclick="generateCard()">Generate ID Card</button>
-            <button id="downloadBtn" onclick="downloadCard()">Download Image</button>
+            <button class="download-btn" id="downloadBtn" onclick="downloadCard()">Download ID Card</button>
         </div>
 
-        <div class="preview-section">
-            <h3>Preview</h3>
+        <div class="preview">
             <canvas id="cardCanvas"></canvas>
         </div>
     </div>
 
     <script>
-        // Setup Canvas
         const canvas = document.getElementById('cardCanvas');
         const ctx = canvas.getContext('2d');
-        let imageLoaded = false;
-
-        // Image Load karo (Yahan 'template.png' wahi image honi chahiye jo tum clean karke folder me rakhoge)
         const template = new Image();
+        
+        // IMPORTANT: Ensure this file name matches your image
         template.src = 'template.png'; 
         
+        let imageLoaded = false;
+
         template.onload = function() {
             canvas.width = template.width;
             canvas.height = template.height;
-            drawBaseImage();
             imageLoaded = true;
+            draw(); // Draw immediately on load
+            document.getElementById('downloadBtn').style.display = 'block';
         };
 
-        function drawBaseImage() {
+        function draw() {
+            if (!imageLoaded) return;
+
+            // 1. Clear and Draw Background
             ctx.drawImage(template, 0, 0);
-        }
 
-        function generateCard() {
-            if (!imageLoaded) {
-                alert("Template image load nahi hui hai. Please check file name.");
-                return;
-            }
+            // 2. Get Input Values
+            const name = document.getElementById('name').value;
+            const role = document.getElementById('role').value;
+            const code = document.getElementById('code').value;
+            const phone = document.getElementById('phone').value;
+            const date = document.getElementById('date').value;
 
-            // Reset Canvas with clean image
-            drawBaseImage();
+            // 3. Get Slider Values (Positions)
+            const nameY = parseInt(document.getElementById('nameY').value);
+            const nameSize = document.getElementById('nameSize').value;
+            
+            const roleY = parseInt(document.getElementById('roleY').value);
+            const roleSize = document.getElementById('roleSize').value;
 
-            // Get Values
-            const name = document.getElementById('name').value || "MEMBER NAME";
-            const role = document.getElementById('role').value || "ROLE";
-            const code = document.getElementById('code').value || "XXXXX";
-            const phone = document.getElementById('phone').value || "XXXXXXXXXX";
-            const date = document.getElementById('date').value || "DD/MM/YYYY";
+            const detailY = parseInt(document.getElementById('detailY').value);
+            const detailX = parseInt(document.getElementById('detailX').value);
+            const lineGap = parseInt(document.getElementById('lineGap').value);
 
-            // --- TEXT SETTINGS (Yahan positions adjust karni pad sakti hain) ---
-
-            // 1. NAME (Center Bold)
-            ctx.font = "bold 60px Arial"; // Size kam jyada yahan se karein
+            // 4. Draw NAME
             ctx.fillStyle = "black";
             ctx.textAlign = "center";
-            // 'canvas.width / 2' means horizontal center. '1050' is approx vertical position based on your image
-            ctx.fillText(name, canvas.width / 2, 1050); 
+            ctx.font = `bold ${nameSize}px Arial`;
+            ctx.fillText(name, canvas.width / 2, nameY);
 
-            // 2. ROLE (White text inside green ribbon)
-            ctx.font = "bold 40px Arial"; 
+            // 5. Draw ROLE (White text)
             ctx.fillStyle = "white";
             ctx.textAlign = "center";
-            ctx.fillText(role, canvas.width / 2, 1180); // 1180 height adjust karein ribbon ke liye
+            ctx.font = `bold ${roleSize}px Arial`;
+            ctx.fillText(role, canvas.width / 2, roleY);
 
-            // 3. DETAILS (Left Aligned)
-            ctx.textAlign = "left";
+            // 6. Draw DETAILS (Black text, Left Aligned)
             ctx.fillStyle = "black";
-            ctx.font = "bold 35px Courier New"; // Thoda monospaced font detail ke liye
+            ctx.textAlign = "left";
+            ctx.font = "bold 35px Courier New"; // Fixed font for details to look technical
 
-            // X coordinate (horizontal) thoda right shift kiya hai taki align ho
-            const startX = 200; 
+            // Line 1: Code
+            ctx.fillText(`Leader code : ${code}`, detailX, detailY);
             
-            // Leader Code
-            ctx.fillText(`Leader code : ${code}`, startX, 1350);
+            // Line 2: Phone (Add gap)
+            ctx.fillText(`PHONE       : ${phone}`, detailX, detailY + lineGap);
             
-            // Phone
-            ctx.fillText(`PHONE       : ${phone}`, startX, 1420);
-
-            // Date
-            ctx.fillText(`Date of join : ${date}`, startX, 1490);
-
-            // Show Download Button
-            document.getElementById('downloadBtn').style.display = 'block';
+            // Line 3: Date (Add 2x gap)
+            ctx.fillText(`Date of join : ${date}`, detailX, detailY + (lineGap * 2));
         }
 
         function downloadCard() {
             const link = document.createElement('a');
-            link.download = 'ID_Card.png';
+            link.download = 'ID_Card_Final.png';
             link.href = canvas.toDataURL();
             link.click();
         }
