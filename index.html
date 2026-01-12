@@ -1,93 +1,136 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Rise Up ID Generator</title>
-    <style>
-        body { font-family: sans-serif; background: #0f172a; color: white; display: flex; flex-direction: column; align-items: center; padding: 20px; }
-        .box { width: 100%; max-width: 400px; background: #1e293b; padding: 20px; border-radius: 15px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
-        h2 { text-align: center; color: #4ade80; margin-bottom: 20px; }
-        input { width: 100%; padding: 12px; margin-bottom: 15px; border-radius: 8px; border: 1px solid #334155; background: #0f172a; color: white; box-sizing: border-box; }
-        button { width: 100%; padding: 15px; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; font-size: 16px; margin-bottom: 10px; }
-        .btn-gen { background: #22c55e; color: white; }
-        .btn-dl { background: #ef4444; color: white; display: none; }
-        canvas { width: 100%; margin-top: 20px; border-radius: 10px; border: 2px solid #334155; display: none; }
-    </style>
+<meta charset="UTF-8">
+<title>Rise Up ID Generator</title>
+<script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
+
+<style>
+body {
+  font-family: Arial;
+  background:#eef2f3;
+  display:flex;
+  justify-content:center;
+  padding:20px;
+}
+
+.container {
+  display:flex;
+  gap:20px;
+  flex-wrap:wrap;
+}
+
+.form {
+  background:#fff;
+  padding:15px;
+  width:260px;
+  border-radius:10px;
+  box-shadow:0 0 10px #0002;
+}
+
+.form input, .form button {
+  width:100%;
+  padding:8px;
+  margin-bottom:10px;
+}
+
+.form button {
+  background:#1f8f3a;
+  color:white;
+  border:none;
+  border-radius:5px;
+}
+
+#card {
+  width:350px;
+  aspect-ratio:3/4;
+  background:url('https://i.ibb.co/LzY76SMR/card-png.png') center/cover no-repeat;
+  position:relative;
+  border-radius:12px;
+  box-shadow:0 0 15px #0004;
+}
+
+.text {
+  position:absolute;
+  width:100%;
+  text-align:center;
+  font-weight:bold;
+}
+
+#name { top:60%; font-size:22px; }
+#role { top:68%; font-size:16px; color:green; }
+
+#code { top:76%; font-size:14px; text-align:left; padding-left:40px; }
+#phone { top:81%; font-size:14px; text-align:left; padding-left:40px; }
+#date { top:86%; font-size:14px; text-align:left; padding-left:40px; }
+
+#photo {
+  position:absolute;
+  top:32%;
+  left:50%;
+  transform:translateX(-50%);
+  width:100px;
+  height:100px;
+  border-radius:50%;
+  object-fit:cover;
+  border:3px solid #2e7d32;
+  display:none;
+}
+</style>
 </head>
+
 <body>
+<div class="container">
 
-    <div class="box">
-        <h2>RISE UP ID</h2>
-        <input type="text" id="name" placeholder="Full Name">
-        <input type="text" id="role" placeholder="Role (e.g. TEAM LEADER)">
-        <input type="text" id="code" placeholder="Leader Code">
-        <input type="text" id="phone" placeholder="Phone Number">
-        <input type="text" id="date" placeholder="Date of Join">
+  <div class="form">
+    <h3>Fill ID Details</h3>
+    <input id="iName" placeholder="Name">
+    <input id="iRole" placeholder="Role">
+    <input id="iCode" placeholder="Leader Code">
+    <input id="iPhone" placeholder="Phone">
+    <input id="iDate" type="date">
+    <input id="iPhoto" type="file" accept="image/*">
+    <button onclick="generate()">Generate</button>
+    <button onclick="downloadCard()">Download PNG</button>
+  </div>
 
-        <button class="btn-gen" onclick="generate()">GENERATE ID CARD</button>
-        <button id="dlBtn" class="btn-dl" onclick="download()">DOWNLOAD IMAGE</button>
+  <div id="card">
+    <img id="photo">
+    <div id="name" class="text">{{Name}}</div>
+    <div id="role" class="text">{{Role}}</div>
+    <div id="code" class="text">Leader code : {{Code}}</div>
+    <div id="phone" class="text">PHONE : {{Phone}}</div>
+    <div id="date" class="text">Date of join : {{Date}}</div>
+  </div>
 
-        <canvas id="cardCanvas"></canvas>
-    </div>
+</div>
 
-    <script>
-        const canvas = document.getElementById('cardCanvas');
-        const ctx = canvas.getContext('2d');
-        const img = new Image();
-        img.crossOrigin = "anonymous";
-        // Teri template ka direct link
-        img.src = 'https://i.ibb.co/FqchQ1g6/RISE-UP-20260111-215123-0000.png';
+<script>
+function generate(){
+  name.innerText = iName.value || "{{Name}}";
+  role.innerText = iRole.value || "{{Role}}";
+  code.innerText = "Leader code : " + (iCode.value || "{{Code}}");
+  phone.innerText = "PHONE : " + (iPhone.value || "{{Phone}}");
+  date.innerText = "Date of join : " + (iDate.value || "{{Date}}");
+}
 
-        function generate() {
-            // Asli image size pe canvas set karna
-            canvas.width = img.naturalWidth;
-            canvas.height = img.naturalHeight;
+iPhoto.onchange = function(){
+  const reader = new FileReader();
+  reader.onload = e => {
+    photo.src = e.target.result;
+    photo.style.display = "block";
+  };
+  reader.readAsDataURL(this.files[0]);
+};
 
-            // Draw Background
-            ctx.drawImage(img, 0, 0);
-
-            // Get Values
-            const name = document.getElementById('name').value.toUpperCase();
-            const role = document.getElementById('role').value.toUpperCase();
-            const code = document.getElementById('code').value;
-            const phone = document.getElementById('phone').value;
-            const date = document.getElementById('date').value;
-
-            const W = canvas.width;
-
-            // 1. NAME - White area ke beech mein
-            ctx.fillStyle = "black";
-            ctx.textAlign = "center";
-            ctx.font = "bold 60px Arial";
-            ctx.fillText(name, W / 2, 615); 
-
-            // 2. ROLE - Green ribbon ke beech mein
-            ctx.fillStyle = "white";
-            ctx.font = "bold 38px Arial";
-            ctx.fillText(role, W / 2, 698);
-
-            // 3. DETAILS - Left align
-            ctx.textAlign = "left";
-            ctx.fillStyle = "black";
-            ctx.font = "bold 34px Arial";
-            const startX = W * 0.15; // 15% margin from left
-
-            ctx.fillText("Leader code : " + code, startX, 805);
-            ctx.fillText("PHONE       : " + phone, startX, 865);
-            ctx.fillText("Date of join : " + date, startX, 925);
-
-            // Show UI
-            canvas.style.display = "block";
-            document.getElementById('dlBtn').style.display = "block";
-        }
-
-        function download() {
-            const link = document.createElement('a');
-            link.download = 'My_ID_Card.png';
-            link.href = canvas.toDataURL();
-            link.click();
-        }
-    </script>
+function downloadCard(){
+  html2canvas(card).then(canvas=>{
+    const link = document.createElement("a");
+    link.download = "riseup-id.png";
+    link.href = canvas.toDataURL();
+    link.click();
+  });
+}
+</script>
 </body>
 </html>
