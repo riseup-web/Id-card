@@ -13,71 +13,66 @@
     <style>
         :root { --p-green: #20c65d; --bg: #121212; }
         body { background: var(--bg); color: white; display: flex; flex-direction: column; align-items: center; padding: 20px 0; font-family: 'Roboto', sans-serif; }
+        .main-wrap { width: 100%; max-width: 400px; padding: 10px; }
         
-        .main-wrap { width: 100%; max-width: 420px; padding: 15px; }
-        
-        /* Input Styling Fix */
-        .form-box { background: #1e1e1e; padding: 25px; border-radius: 20px; margin-bottom: 25px; border: 1px solid #333; box-shadow: 0 15px 35px rgba(0,0,0,0.6); }
+        /* Input Box Fix */
+        .form-box { background: #1e1e1e; padding: 20px; border-radius: 15px; margin-bottom: 20px; }
         .form-control { 
             background: #2a2a2a !important; 
             border: 1px solid #444 !important; 
             color: #ffffff !important; 
-            padding: 12px;
-            margin-bottom: 15px; 
-            font-weight: 500;
+            margin-bottom: 10px; 
         }
-        .form-control::placeholder { color: #888 !important; }
-        .form-control:focus { background: #333 !important; border-color: var(--p-green) !important; color: #fff !important; box-shadow: none; }
-        
-        .btn-dl { 
-            background: var(--p-green); 
-            color: white; 
-            font-weight: 900; 
-            width: 100%; 
-            padding: 15px; 
-            border: none; 
-            border-radius: 10px; 
-            text-transform: uppercase; 
-            letter-spacing: 1px;
-            transition: 0.3s;
-        }
-        .btn-dl:hover { background: #18a94d; transform: translateY(-2px); }
+        .form-control::placeholder { color: #aaaaaa !important; }
+        .btn-dl { background: var(--p-green); color: white; font-weight: bold; width: 100%; padding: 12px; border: none; border-radius: 8px; text-transform: uppercase; }
 
-        /* FRONT ID PREVIEW */
+        /* ID CARD PREVIEW */
         #id-card {
             width: 360px; height: 640px;
             position: relative;
             background: url('https://i.ibb.co/BKcfrcVm/card-png.png') no-repeat center center;
             background-size: 100% 100%;
             margin: 0 auto;
-            border-radius: 8px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
         }
 
-        #outName { position: absolute; top: 362px; left: 0; width: 100%; font-family: 'Oswald', sans-serif; font-size: 40px; color: #000; text-transform: uppercase; text-align: center; font-weight: 700; }
-        #outRole { position: absolute; top: 438px; left: 0; width: 100%; color: #fff; font-size: 18px; font-weight: 900; text-transform: uppercase; text-align: center; }
+        #outName {
+            position: absolute; top: 362px; left: 50%; transform: translateX(-50%);
+            width: 100%; font-family: 'Oswald', sans-serif; font-size: 40px;
+            color: #000; text-transform: uppercase; text-align: center; font-weight: 700;
+        }
 
-        .details-box { position: absolute; top: 512px; left: 42px; width: 290px; color: #000; font-size: 18px; font-weight: 900; line-height: 1.62; }
+        #outRole {
+            position: absolute; top: 438px; left: 50%; transform: translateX(-50%);
+            width: 100%; color: #fff; font-size: 18px; font-weight: 900;
+            text-transform: uppercase; text-align: center;
+        }
+
+        .details-box {
+            position: absolute; top: 512px; left: 42px; width: 290px;
+            color: #000; font-size: 18px; font-weight: 900; line-height: 1.62;
+        }
         .d-row { display: flex; align-items: center; }
         .d-lbl { width: 115px; }
 
-        /* Page 2 Helper */
-        .preview-text { text-align: center; color: var(--p-green); margin-top: 30px; font-weight: bold; font-size: 14px; text-transform: uppercase; }
-        #back-preview { width: 360px; height: auto; margin: 10px auto; display: block; border-radius: 8px; border: 1px solid #333; }
-        #back-img-tag { display: none; } 
+        /* Preview Label */
+        .preview-label { color: var(--p-green); text-align: center; margin-top: 20px; font-weight: bold; }
+        #back-preview { width: 360px; height: auto; margin: 10px auto; display: block; border: 1px solid #333; }
+        
+        /* Hidden High-Quality Image Source */
+        #back-img-source { display: none; }
     </style>
 </head>
 <body>
 
 <div class="main-wrap">
     <div class="form-box">
-        <h4 class="text-center mb-4" style="color: var(--p-green); font-weight: 900;">RISE UP ID MAKER</h4>
+        <h5 class="text-center mb-3" style="color: var(--p-green)">ID Card Details</h5>
         <input type="text" id="inName" class="form-control" placeholder="Full Name" oninput="update()">
-        <input type="text" id="inRole" class="form-control" placeholder="Designation / Role" oninput="update()">
+        <input type="text" id="inRole" class="form-control" placeholder="Role" oninput="update()">
         <input type="text" id="inCode" class="form-control" placeholder="Leader Code" oninput="update()">
         <input type="text" id="inPhone" class="form-control" placeholder="Phone Number" oninput="update()">
-        <input type="text" id="inDate" class="form-control" placeholder="Date of Joining" oninput="update()">
-        <button class="btn-dl mt-3" onclick="downloadPDF()">Download Official PDF</button>
+        <input type="text" id="inDate" class="form-control" placeholder="Date of Join" oninput="update()">
+        <button class="btn-dl mt-2" onclick="downloadPDF()">Download Official PDF</button>
     </div>
 
     <div id="id-card">
@@ -90,14 +85,13 @@
         </div>
     </div>
 
-    <div class="preview-text">Page 2: Security Instructions</div>
+    <div class="preview-label">Page 2: Instructions</div>
     <img id="back-preview" src="https://i.ibb.co/GQy6BGgn/Blue-and-White-Modern-Professional-Company-ID-Card-20260112-134859-0001.png">
     
-    <img id="back-img-tag" src="https://i.ibb.co/GQy6BGgn/Blue-and-White-Modern-Professional-Company-ID-Card-20260112-134859-0001.png" crossorigin="anonymous">
+    <img id="back-img-source" src="https://i.ibb.co/GQy6BGgn/Blue-and-White-Modern-Professional-Company-ID-Card-20260112-134859-0001.png" crossorigin="anonymous">
 </div>
 
 <script>
-    // Live update function
     function update() {
         document.getElementById('outName').innerText = document.getElementById('inName').value || "NAME HERE";
         document.getElementById('outRole').innerText = document.getElementById('inRole').value || "ROLE";
@@ -109,32 +103,31 @@
     async function downloadPDF() {
         const { jsPDF } = window.jspdf;
         const frontCard = document.getElementById('id-card');
-        const backImg = document.getElementById('back-img-tag');
+        const backImg = document.getElementById('back-img-source');
         
-        // 1. Capture Front Side with Ultra Scale
+        // 1. Capture Front Side with Scale 5 (Extremely Sharp)
         const canvas = await html2canvas(frontCard, { 
             scale: 5, 
             useCORS: true,
-            backgroundColor: null,
-            scrollX: 0,
-            scrollY: -window.scrollY
+            backgroundColor: null
         });
-        const frontData = canvas.toDataURL('image/png', 1.0);
+        const frontData = canvas.toDataURL('image/png');
 
-        // 2. Setup A4 PDF (Better quality handling)
-        const pdf = new jsPDF('p', 'mm', 'a4');
-        const pdfWidth = pdf.internal.pageSize.getWidth();
-        const pdfHeight = pdf.internal.pageSize.getHeight();
+        // 2. Create PDF with EXACT dimensions as the ID card (360px x 640px)
+        // No more stretching to A4
+        const pdf = new jsPDF({
+            orientation: 'p',
+            unit: 'px',
+            format: [360, 640]
+        });
 
-        // 3. Add Page 1 (ID Card)
-        // Calculating height to maintain aspect ratio
-        const frontHeight = (640 * pdfWidth) / 360; 
-        pdf.addImage(frontData, 'PNG', 0, 0, pdfWidth, frontHeight, undefined, 'FAST');
+        // 3. Add Page 1 (Front)
+        pdf.addImage(frontData, 'PNG', 0, 0, 360, 640);
 
         // 4. Add Page 2 (Instructions)
-        pdf.addPage();
-        // Adding the Canva Image directly from source for 100% clarity
-        pdf.addImage(backImg, 'PNG', 0, 0, pdfWidth, pdfHeight, undefined, 'SLOW');
+        // Direct addition from source image for 100% clarity
+        pdf.addPage([360, 640], 'p');
+        pdf.addImage(backImg, 'PNG', 0, 0, 360, 640);
 
         // 5. Final Save
         pdf.save("Rise up ID card.pdf");
@@ -142,5 +135,4 @@
 </script>
 
 </body>
-                </html>
-                
+</html>
