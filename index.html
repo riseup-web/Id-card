@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Rise Up | Official PDF Generator</title>
+    <title>Rise Up | Official ID Generator</title>
     
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
@@ -30,7 +30,6 @@
             width: 100%;
             max-width: 400px;
             padding: 10px;
-            text-align: center;
         }
 
         .form-card {
@@ -56,75 +55,80 @@
             text-transform: uppercase;
             color: white;
             width: 100%;
+            border-radius: 8px;
         }
 
-        /* ID CARD DESIGN */
+        /* ID CARD DESIGN - PIXEL PERFECT POSITIONS */
         #id-card {
             width: 360px;
             height: 640px;
             position: relative;
-            border-radius: 8px;
-            overflow: hidden;
             background: url('https://i.ibb.co/BKcfrcVm/card-png.png') no-repeat center center;
             background-size: 100% 100%;
             margin: 0 auto;
+            border-radius: 5px;
+            overflow: hidden;
         }
 
-        .overlay-layer {
-            position: absolute;
-            width: 100%;
-            height: 100%;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            pointer-events: none;
-        }
-
-        /* Naam Fix: Adjusted position and spacing */
+        /* NAAM: Adjusted to be below hexagon */
         #outName {
-            margin-top: 365px; /* Thoda neeche kiya hai taaki hexagon se door rahe */
+            position: absolute;
+            top: 368px; 
+            left: 50%;
+            transform: translateX(-50%);
+            width: 90%;
             font-family: 'Oswald', sans-serif;
             font-size: 38px;
             color: #000000;
             text-transform: uppercase;
             font-weight: 700;
-            width: 90%;
+            text-align: center;
             line-height: 1;
-            letter-spacing: -0.5px;
         }
 
-        /* Role: Ribbon position */
+        /* ROLE: Center of the green ribbon */
         #outRole {
-            margin-top: 22px;
+            position: absolute;
+            top: 428px;
+            left: 50%;
+            transform: translateX(-50%);
             color: #ffffff;
             font-size: 18px;
             font-weight: 900;
             text-transform: uppercase;
-            letter-spacing: 1px;
-            text-shadow: 1px 1px 2px rgba(0,0,0,0.4);
+            text-align: center;
+            width: 100%;
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.3);
         }
 
-        /* Details section */
-        .details-section {
-            margin-top: 55px;
-            width: 82%;
+        /* DETAILS AREA */
+        .details-area {
+            position: absolute;
+            top: 508px;
+            left: 42px;
+            width: 290px;
             color: #000000;
             font-size: 18px;
             font-weight: 800;
-            text-align: left;
+            line-height: 1.65;
         }
 
         .d-row {
             display: flex;
-            margin-bottom: 2px;
+            align-items: center;
         }
 
-        .d-label { width: 125px; }
-        .d-sep { margin: 0 10px; }
+        .d-label {
+            width: 115px;
+        }
 
-        .validity-text {
+        .d-sep {
+            margin-right: 12px;
+        }
+
+        .validity-tag {
             position: absolute;
-            bottom: 12px;
+            bottom: 15px;
             right: 20px;
             color: #ffffff;
             font-size: 11px;
@@ -136,7 +140,7 @@
 
 <div class="main-container">
     <div class="form-card">
-        <h4 class="mb-4" style="color: var(--primary-green)">RISE UP PDF GEN</h4>
+        <h4 class="text-center mb-4" style="color: var(--primary-green)">RISE UP ID & PDF</h4>
         <input type="text" id="inName" class="form-control" placeholder="Full Name" oninput="update()">
         <input type="text" id="inRole" class="form-control" placeholder="Role (e.g. MANAGER)" oninput="update()">
         <input type="text" id="inCode" class="form-control" placeholder="Leader Code" oninput="update()">
@@ -147,17 +151,16 @@
     </div>
 
     <div id="id-card">
-        <div class="overlay-layer">
-            <div id="outName">NAME HERE</div>
-            <div id="outRole">ROLE</div>
-            
-            <div class="details-section">
-                <div class="d-row"><span class="d-label">Leader code</span><span class="d-sep">|</span><span id="outCode"></span></div>
-                <div class="d-row"><span class="d-label">Date of join</span><span class="d-sep">|</span><span id="outDate"></span></div>
-                <div class="d-row"><span class="d-label">Phone</span><span class="d-sep">|</span><span id="outPhone"></span></div>
-            </div>
+        <div id="outName">NAME HERE</div>
+        <div id="outRole">ROLE</div>
+        
+        <div class="details-area">
+            <div class="d-row"><span class="d-label">Leader code</span><span class="d-sep">|</span><span id="outCode"></span></div>
+            <div class="d-row"><span class="d-label">Date of join</span><span class="d-sep">|</span><span id="outDate"></span></div>
+            <div class="d-row"><span class="d-label">Phone</span><span class="d-sep">|</span><span id="outPhone"></span></div>
         </div>
-        <div class="validity-text">validity till 1 year</div>
+        
+        <div class="validity-tag">validity till 1 year</div>
     </div>
 </div>
 
@@ -174,11 +177,12 @@
         const { jsPDF } = window.jspdf;
         const card = document.getElementById('id-card');
         
-        // Quality high rakhne ke liye scale 3 use kiya hai
-        html2canvas(card, { scale: 3, useCORS: true }).then(canvas => {
+        html2canvas(card, { 
+            scale: 4, 
+            useCORS: true,
+            logging: false 
+        }).then(canvas => {
             const imgData = canvas.toDataURL('image/png');
-            
-            // PDF size (vertical ID card ke liye)
             const pdf = new jsPDF({
                 orientation: 'p',
                 unit: 'px',
