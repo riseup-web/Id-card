@@ -1,136 +1,111 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-<meta charset="UTF-8">
-<title>Rise Up ID Generator</title>
-<script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Rise Up ID Generator Pro</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Oswald:wght@700&family=Roboto:wght@400;700&display=swap');
 
-<style>
-body {
-  font-family: Arial;
-  background:#eef2f3;
-  display:flex;
-  justify-content:center;
-  padding:20px;
-}
+        body { font-family: 'Roboto', sans-serif; background: #e0e0e0; display: flex; flex-direction: column; align-items: center; padding: 20px; }
+        
+        /* Input Styling */
+        .form-container { background: white; padding: 20px; border-radius: 12px; margin-bottom: 20px; width: 100%; max-width: 380px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); }
+        h2 { text-align: center; color: #1b5e20; margin-top: 0; }
+        input { width: 94%; padding: 12px; margin: 8px 0; border: 1px solid #ccc; border-radius: 8px; font-size: 14px; }
+        button { background: #2e7d32; color: white; padding: 14px; border: none; border-radius: 8px; cursor: pointer; width: 100%; font-size: 16px; font-weight: bold; margin-top: 10px; }
+        
+        /* CARD DESIGN - Exactly like your Image */
+        #id-card {
+            width: 360px; height: 640px;
+            background: url('https://i.ibb.co/mF0L9pX/27298.png') no-repeat center center;
+            background-size: cover;
+            position: relative;
+            border-radius: 10px;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.3);
+            overflow: hidden;
+        }
 
-.container {
-  display:flex;
-  gap:20px;
-  flex-wrap:wrap;
-}
+        /* Name Styling - Bold Oswald Font */
+        .emp-name {
+            position: absolute; top: 358px; width: 100%; text-align: center;
+            font-family: 'Oswald', sans-serif; font-size: 42px; text-transform: uppercase;
+            letter-spacing: 1px; color: #000;
+        }
 
-.form {
-  background:#fff;
-  padding:15px;
-  width:260px;
-  border-radius:10px;
-  box-shadow:0 0 10px #0002;
-}
+        /* Role Ribbon Styling */
+        .role-ribbon {
+            position: absolute; top: 432px; width: 100%; display: flex; justify-content: center;
+        }
+        .role-text {
+            background: #20c65d; color: white; padding: 4px 25px;
+            font-size: 18px; font-weight: bold; text-transform: uppercase;
+            clip-path: polygon(10% 0, 90% 0, 100% 50%, 90% 100%, 10% 100%, 0 50%);
+            min-width: 100px; text-align: center;
+        }
 
-.form input, .form button {
-  width:100%;
-  padding:8px;
-  margin-bottom:10px;
-}
+        /* Details Section - Bottom Light Green Area */
+        .details-box {
+            position: absolute; top: 510px; left: 25px;
+            color: #000; font-size: 19px; line-height: 1.6; font-weight: 700;
+        }
+        .details-box div { margin-bottom: 2px; display: flex; }
+        .label { width: 130px; }
+        .separator { margin-right: 10px; }
 
-.form button {
-  background:#1f8f3a;
-  color:white;
-  border:none;
-  border-radius:5px;
-}
-
-#card {
-  width:350px;
-  aspect-ratio:3/4;
-  background:url('https://i.ibb.co/LzY76SMR/card-png.png') center/cover no-repeat;
-  position:relative;
-  border-radius:12px;
-  box-shadow:0 0 15px #0004;
-}
-
-.text {
-  position:absolute;
-  width:100%;
-  text-align:center;
-  font-weight:bold;
-}
-
-#name { top:60%; font-size:22px; }
-#role { top:68%; font-size:16px; color:green; }
-
-#code { top:76%; font-size:14px; text-align:left; padding-left:40px; }
-#phone { top:81%; font-size:14px; text-align:left; padding-left:40px; }
-#date { top:86%; font-size:14px; text-align:left; padding-left:40px; }
-
-#photo {
-  position:absolute;
-  top:32%;
-  left:50%;
-  transform:translateX(-50%);
-  width:100px;
-  height:100px;
-  border-radius:50%;
-  object-fit:cover;
-  border:3px solid #2e7d32;
-  display:none;
-}
-</style>
+        .validity {
+            position: absolute; bottom: 15px; right: 15px;
+            color: white; font-size: 12px; font-weight: bold; opacity: 0.9;
+        }
+    </style>
 </head>
-
 <body>
-<div class="container">
 
-  <div class="form">
-    <h3>Fill ID Details</h3>
-    <input id="iName" placeholder="Name">
-    <input id="iRole" placeholder="Role">
-    <input id="iCode" placeholder="Leader Code">
-    <input id="iPhone" placeholder="Phone">
-    <input id="iDate" type="date">
-    <input id="iPhoto" type="file" accept="image/*">
-    <button onclick="generate()">Generate</button>
-    <button onclick="downloadCard()">Download PNG</button>
-  </div>
+    <div class="form-container">
+        <h2>ID Generator</h2>
+        <input type="text" id="inName" placeholder="Full Name (e.g. AKASH KOHLI)" oninput="draw()">
+        <input type="text" id="inRole" placeholder="Role (e.g. MANAGER)" oninput="draw()">
+        <input type="text" id="inCode" placeholder="Leader Code" oninput="draw()">
+        <input type="text" id="inDate" placeholder="Date of Join" oninput="draw()">
+        <input type="text" id="inPhone" placeholder="Phone Number" oninput="draw()">
+        <button onclick="download()">Download PNG</button>
+    </div>
 
-  <div id="card">
-    <img id="photo">
-    <div id="name" class="text">{{Name}}</div>
-    <div id="role" class="text">{{Role}}</div>
-    <div id="code" class="text">Leader code : {{Code}}</div>
-    <div id="phone" class="text">PHONE : {{Phone}}</div>
-    <div id="date" class="text">Date of join : {{Date}}</div>
-  </div>
+    <div id="id-card">
+        <div class="emp-name" id="outName">NAME HERE</div>
+        
+        <div class="role-ribbon">
+            <div class="role-text" id="outRole">ROLE</div>
+        </div>
 
-</div>
+        <div class="details-box">
+            <div><span class="label">Leader code</span><span class="separator">|</span><span id="outCode"></span></div>
+            <div><span class="label">Date of join</span><span class="separator">|</span><span id="outDate"></span></div>
+            <div><span class="label">Phone</span><span class="separator">|</span><span id="outPhone"></span></div>
+        </div>
 
-<script>
-function generate(){
-  name.innerText = iName.value || "{{Name}}";
-  role.innerText = iRole.value || "{{Role}}";
-  code.innerText = "Leader code : " + (iCode.value || "{{Code}}");
-  phone.innerText = "PHONE : " + (iPhone.value || "{{Phone}}");
-  date.innerText = "Date of join : " + (iDate.value || "{{Date}}");
-}
+        <div class="validity">validity till 1 year</div>
+    </div>
 
-iPhoto.onchange = function(){
-  const reader = new FileReader();
-  reader.onload = e => {
-    photo.src = e.target.result;
-    photo.style.display = "block";
-  };
-  reader.readAsDataURL(this.files[0]);
-};
+    <script>
+        function draw() {
+            document.getElementById('outName').innerText = document.getElementById('inName').value || "NAME HERE";
+            document.getElementById('outRole').innerText = document.getElementById('inRole').value || "ROLE";
+            document.getElementById('outCode').innerText = document.getElementById('inCode').value;
+            document.getElementById('outDate').innerText = document.getElementById('inDate').value;
+            document.getElementById('outPhone').innerText = document.getElementById('inPhone').value;
+        }
 
-function downloadCard(){
-  html2canvas(card).then(canvas=>{
-    const link = document.createElement("a");
-    link.download = "riseup-id.png";
-    link.href = canvas.toDataURL();
-    link.click();
-  });
-}
-</script>
+        function download() {
+            const card = document.getElementById('id-card');
+            html2canvas(card, { useCORS: true, scale: 3 }).then(canvas => {
+                let link = document.createElement('a');
+                link.download = 'RiseUp_ID_' + document.getElementById('inName').value + '.png';
+                link.href = canvas.toDataURL("image/png");
+                link.click();
+            });
+        }
+    </script>
 </body>
 </html>
