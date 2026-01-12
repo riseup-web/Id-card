@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Rise Up | Official HD Generator</title>
+    <title>Rise Up | Final Fix</title>
     
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
@@ -12,55 +12,44 @@
 
     <style>
         :root { --p-green: #20c65d; --bg: #121212; }
-        body { background: var(--bg); color: white; display: flex; flex-direction: column; align-items: center; padding: 20px 0; font-family: 'Roboto', sans-serif; overflow-x: hidden; }
+        body { background: var(--bg); color: white; display: flex; flex-direction: column; align-items: center; padding: 20px 0; font-family: 'Roboto', sans-serif; }
         .main-wrap { width: 100%; max-width: 400px; padding: 10px; }
         
-        /* Input Box Styling */
-        .form-box { background: #1e1e1e; padding: 20px; border-radius: 15px; margin-bottom: 20px; }
-        .form-control { 
-            background: #2a2a2a !important; 
-            border: 1px solid #444 !important; 
-            color: #ffffff !important; 
-            margin-bottom: 10px; 
-        }
-        .form-control::placeholder { color: #aaaaaa !important; }
+        /* Input Styling */
+        .form-box { background: #1e1e1e; padding: 20px; border-radius: 15px; margin-bottom: 20px; border: 1px solid #333; }
+        .form-control { background: #2a2a2a !important; border: 1px solid #444 !important; color: #ffffff !important; margin-bottom: 10px; }
         .btn-dl { background: var(--p-green); color: white; font-weight: bold; width: 100%; padding: 12px; border: none; border-radius: 8px; text-transform: uppercase; }
 
-        /* ID CARD PREVIEW - Fixed Width Ensure karta hai ki mobile pe shrink na ho */
+        /* SCROLL WRAPPER: User can scroll to see, but capture handles full width */
+        .card-wrapper {
+            width: 100%;
+            overflow-x: auto; /* Allows scrolling on mobile */
+            padding-bottom: 10px;
+            display: flex;
+            justify-content: center;
+        }
+
+        /* ID CARD - Fixed Size */
         #id-card {
             width: 360px; height: 640px;
             position: relative;
             background: url('https://i.ibb.co/BKcfrcVm/card-png.png') no-repeat center center;
             background-size: 100% 100%;
-            margin: 0 auto;
-            flex-shrink: 0; /* Ye photo ko sikudne se rokega */
-            box-shadow: 0 0 15px rgba(0,0,0,0.5);
+            flex-shrink: 0; /* Prevents shrinking */
         }
 
-        #outName {
-            position: absolute; top: 362px; left: 50%; transform: translateX(-50%);
-            width: 100%; font-family: 'Oswald', sans-serif; font-size: 40px;
-            color: #000; text-transform: uppercase; text-align: center; font-weight: 700;
-        }
+        #outName { position: absolute; top: 362px; left: 0; width: 100%; font-family: 'Oswald', sans-serif; font-size: 40px; color: #000; text-transform: uppercase; text-align: center; font-weight: 700; }
+        #outRole { position: absolute; top: 438px; left: 0; width: 100%; color: #fff; font-size: 18px; font-weight: 900; text-transform: uppercase; text-align: center; }
 
-        #outRole {
-            position: absolute; top: 438px; left: 50%; transform: translateX(-50%);
-            width: 100%; color: #fff; font-size: 18px; font-weight: 900;
-            text-transform: uppercase; text-align: center;
-        }
-
-        .details-box {
-            position: absolute; top: 512px; left: 42px; width: 290px;
-            color: #000; font-size: 18px; font-weight: 900; line-height: 1.62;
-        }
+        .details-box { position: absolute; top: 512px; left: 42px; width: 290px; color: #000; font-size: 18px; font-weight: 900; line-height: 1.62; }
         .d-row { display: flex; align-items: center; }
         .d-lbl { width: 115px; }
 
-        /* Preview Label */
+        /* Page 2 Preview */
         .preview-label { color: var(--p-green); text-align: center; margin-top: 20px; font-weight: bold; }
-        #back-preview { width: 360px; height: auto; margin: 10px auto; display: block; border: 1px solid #333; }
+        #back-preview { width: 100%; max-width: 360px; height: auto; margin: 10px auto; display: block; border: 1px solid #333; }
         
-        /* Hidden High-Quality Image Source */
+        /* Hidden Source Image */
         #back-img-source { display: none; }
     </style>
 </head>
@@ -68,16 +57,16 @@
 
 <div class="main-wrap">
     <div class="form-box">
-        <h5 class="text-center mb-3" style="color: var(--p-green)">ID Card Details</h5>
+        <h5 class="text-center mb-3" style="color: var(--p-green)">Rise Up ID Generator</h5>
         <input type="text" id="inName" class="form-control" placeholder="Full Name" oninput="update()">
         <input type="text" id="inRole" class="form-control" placeholder="Role" oninput="update()">
         <input type="text" id="inCode" class="form-control" placeholder="Leader Code" oninput="update()">
         <input type="text" id="inPhone" class="form-control" placeholder="Phone Number" oninput="update()">
         <input type="text" id="inDate" class="form-control" placeholder="Date of Join" oninput="update()">
-        <button class="btn-dl mt-2" onclick="downloadPDF()">Download Official PDF</button>
+        <button class="btn-dl mt-2" onclick="downloadPDF()">Download Final PDF</button>
     </div>
 
-    <div style="overflow-x: auto; width: 100%; display: flex; justify-content: center;">
+    <div class="card-wrapper">
         <div id="id-card">
             <div id="outName">NAME HERE</div>
             <div id="outRole">ROLE</div>
@@ -91,7 +80,6 @@
 
     <div class="preview-label">Page 2: Instructions</div>
     <img id="back-preview" src="https://i.ibb.co/GQy6BGgn/Blue-and-White-Modern-Professional-Company-ID-Card-20260112-134859-0001.png">
-    
     <img id="back-img-source" src="https://i.ibb.co/GQy6BGgn/Blue-and-White-Modern-Professional-Company-ID-Card-20260112-134859-0001.png" crossorigin="anonymous">
 </div>
 
@@ -109,28 +97,25 @@
         const frontCard = document.getElementById('id-card');
         const backImg = document.getElementById('back-img-source');
         
-        // FIX: windowWidth: 400 set karne se phone pe bhi puri photo aayegi
+        // --- MAGIC FIX ---
+        // windowWidth: 1600 -> Code sochega ye Desktop hai, toh puri width lega
+        // x: 0, scrollX: 0 -> Ensure karega left side se start ho
         const canvas = await html2canvas(frontCard, { 
-            scale: 5, 
+            scale: 4, 
             useCORS: true,
-            backgroundColor: null,
-            windowWidth: 400, // Forces full width capture
-            width: 360,       // Ensures exact card width
-            x: 0
+            windowWidth: 1600, // Forces desktop view logic
+            width: 360,
+            height: 640,
+            scrollX: 0,
+            scrollY: 0,
+            x: 0,
+            backgroundColor: null
         });
+        
         const frontData = canvas.toDataURL('image/png');
+        const pdf = new jsPDF({ orientation: 'p', unit: 'px', format: [360, 640] });
 
-        // Create PDF with EXACT dimensions [360, 640]
-        const pdf = new jsPDF({
-            orientation: 'p',
-            unit: 'px',
-            format: [360, 640]
-        });
-
-        // Add Page 1 (Front)
         pdf.addImage(frontData, 'PNG', 0, 0, 360, 640);
-
-        // Add Page 2 (Instructions)
         pdf.addPage([360, 640], 'p');
         pdf.addImage(backImg, 'PNG', 0, 0, 360, 640);
 
