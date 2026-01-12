@@ -15,17 +15,15 @@
         body { background: var(--bg); color: white; display: flex; flex-direction: column; align-items: center; padding: 20px 0; font-family: 'Roboto', sans-serif; }
         .main-wrap { width: 100%; max-width: 400px; padding: 10px; }
         
-        /* Input Box Fix: Text visibility and colors */
-        .form-box { background: #1e1e1e; padding: 20px; border-radius: 15px; margin-bottom: 20px; box-shadow: 0 10px 25px rgba(0,0,0,0.5); }
+        /* Input Box Fix */
+        .form-box { background: #1e1e1e; padding: 20px; border-radius: 15px; margin-bottom: 20px; }
         .form-control { 
             background: #2a2a2a !important; 
             border: 1px solid #444 !important; 
-            color: #ffffff !important; /* Writing text color */
+            color: #ffffff !important; 
             margin-bottom: 10px; 
         }
         .form-control::placeholder { color: #aaaaaa !important; }
-        .form-control:focus { background: #333 !important; color: white !important; border-color: var(--p-green) !important; box-shadow: none; }
-        
         .btn-dl { background: var(--p-green); color: white; font-weight: bold; width: 100%; padding: 12px; border: none; border-radius: 8px; text-transform: uppercase; }
 
         /* ID CARD PREVIEW */
@@ -35,7 +33,6 @@
             background: url('https://i.ibb.co/BKcfrcVm/card-png.png') no-repeat center center;
             background-size: 100% 100%;
             margin: 0 auto;
-            border-radius: 4px;
         }
 
         #outName {
@@ -56,10 +53,10 @@
         }
         .d-row { display: flex; align-items: center; }
         .d-lbl { width: 115px; }
-        .validity { position: absolute; bottom: 12px; right: 20px; color: white; font-size: 11px; font-weight: bold; text-transform: uppercase; }
 
-        /* Instruction Image Display */
-        #back-preview { width: 360px; height: auto; margin: 20px auto; display: block; border: 2px solid #333; }
+        /* Page 2 Preview (Instruction Page) */
+        .preview-label { color: var(--p-green); text-align: center; margin-top: 20px; font-weight: bold; }
+        #back-preview { width: 360px; height: auto; margin: 10px auto; display: block; border: 2px solid #333; }
         #back-img-tag { display: none; } 
     </style>
 </head>
@@ -84,10 +81,9 @@
             <div class="d-row"><span class="d-lbl">Date of join</span><span>| &nbsp;</span><span id="outDate"></span></div>
             <div class="d-row"><span class="d-lbl">Phone</span><span>| &nbsp;</span><span id="outPhone"></span></div>
         </div>
-        <div class="validity">validity till 1 year</div>
     </div>
 
-    <p class="mt-4 mb-1 text-center" style="color: var(--p-green)">Page 2: Instructions</p>
+    <div class="preview-label">Page 2: Instructions</div>
     <img id="back-preview" src="https://i.ibb.co/GQy6BGgn/Blue-and-White-Modern-Professional-Company-ID-Card-20260112-134859-0001.png">
     
     <img id="back-img-tag" src="https://i.ibb.co/GQy6BGgn/Blue-and-White-Modern-Professional-Company-ID-Card-20260112-134859-0001.png" crossorigin="anonymous">
@@ -97,9 +93,9 @@
     function update() {
         document.getElementById('outName').innerText = document.getElementById('inName').value || "NAME HERE";
         document.getElementById('outRole').innerText = document.getElementById('inRole').value || "ROLE";
-        document.getElementById('outCode').innerText = document.getElementById('inCode').value;
-        document.getElementById('outDate').innerText = document.getElementById('inDate').value;
-        document.getElementById('outPhone').innerText = document.getElementById('inPhone').value;
+        document.getElementById('outCode').innerText = document.getElementById('inCode').value || "AK";
+        document.getElementById('outDate').innerText = document.getElementById('inDate').value || "28-12-2025";
+        document.getElementById('outPhone').innerText = document.getElementById('inPhone').value || "8968146117";
     }
 
     async function downloadPDF() {
@@ -107,21 +103,24 @@
         const frontCard = document.getElementById('id-card');
         const backImg = document.getElementById('back-img-tag');
         
-        // Front Side Capture
-        const canvas = await html2canvas(frontCard, { scale: 4, useCORS: true });
-        const frontData = canvas.toDataURL('image/png');
+        // High Quality Capture for Front
+        const canvas = await html2canvas(frontCard, { 
+            scale: 5, // Increased scale for sharpness
+            useCORS: true,
+            logging: false,
+            allowTaint: true
+        });
+        const frontData = canvas.toDataURL('image/jpeg', 1.0);
 
-        // Create PDF
         const pdf = new jsPDF({ orientation: 'p', unit: 'px', format: [360, 640] });
 
-        // Add Page 1
-        pdf.addImage(frontData, 'PNG', 0, 0, 360, 640);
+        // Page 1: Front ID Card
+        pdf.addImage(frontData, 'JPEG', 0, 0, 360, 640, undefined, 'FAST');
 
-        // Add Page 2
+        // Page 2: Instruction Page (Direct image add to prevent blur)
         pdf.addPage([360, 640], 'p');
-        pdf.addImage(backImg, 'PNG', 0, 0, 360, 640);
+        pdf.addImage(backImg, 'PNG', 0, 0, 360, 640, undefined, 'SLOW');
 
-        // Save
         pdf.save("Rise up ID card.pdf");
     }
 </script>
