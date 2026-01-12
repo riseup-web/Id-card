@@ -3,122 +3,89 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Rise Up ID Generator Pro</title>
+    <title>Rise Up ID Generator</title>
     <style>
-        :root { --primary: #4ade80; --bg: #0f172a; --card: #1e293b; }
-        body { font-family: 'Segoe UI', Roboto, sans-serif; background: var(--bg); color: white; margin: 0; padding: 15px; display: flex; flex-direction: column; align-items: center; }
-        .wrapper { width: 100%; max-width: 450px; background: var(--card); padding: 20px; border-radius: 24px; box-shadow: 0 20px 50px rgba(0,0,0,0.6); border: 1px solid #334155; box-sizing: border-box; }
-        h2 { text-align: center; color: var(--primary); margin-bottom: 25px; font-weight: 800; text-transform: uppercase; letter-spacing: 2px; }
-        .field { margin-bottom: 15px; }
-        label { display: block; margin-bottom: 6px; font-size: 12px; color: #94a3b8; font-weight: bold; letter-spacing: 0.5px; }
-        input { width: 100%; padding: 14px; background: #0f172a; border: 1px solid #334155; color: white; border-radius: 12px; box-sizing: border-box; font-size: 15px; transition: 0.3s; }
-        input:focus { border-color: var(--primary); outline: none; box-shadow: 0 0 10px rgba(74, 222, 128, 0.2); }
-        .btn-box { margin-top: 20px; display: flex; flex-direction: column; gap: 10px; }
-        button { width: 100%; padding: 16px; border: none; border-radius: 12px; cursor: pointer; font-size: 16px; font-weight: bold; transition: 0.2s; }
-        .gen-btn { background: var(--primary); color: #064e3b; }
-        .gen-btn:hover { background: #22c55e; }
-        .dl-btn { background: #ef4444; color: white; display: none; }
-        #previewContainer { margin-top: 25px; width: 100%; text-align: center; }
-        canvas { width: 100%; height: auto; border-radius: 12px; border: 2px solid #334155; display: none; }
-        .hint { color: #64748b; font-size: 12px; margin-top: 10px; }
+        body { font-family: sans-serif; background: #0f172a; color: white; display: flex; flex-direction: column; align-items: center; padding: 20px; }
+        .box { width: 100%; max-width: 400px; background: #1e293b; padding: 20px; border-radius: 15px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
+        h2 { text-align: center; color: #4ade80; margin-bottom: 20px; }
+        input { width: 100%; padding: 12px; margin-bottom: 15px; border-radius: 8px; border: 1px solid #334155; background: #0f172a; color: white; box-sizing: border-box; }
+        button { width: 100%; padding: 15px; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; font-size: 16px; margin-bottom: 10px; }
+        .btn-gen { background: #22c55e; color: white; }
+        .btn-dl { background: #ef4444; color: white; display: none; }
+        canvas { width: 100%; margin-top: 20px; border-radius: 10px; border: 2px solid #334155; display: none; }
     </style>
 </head>
 <body>
 
-    <div class="wrapper">
-        <h2>Rise Up ID</h2>
-        
-        <div class="field">
-            <label>FULL NAME</label>
-            <input type="text" id="name" placeholder="Enter Member Name">
-        </div>
-        <div class="field">
-            <label>ROLE</label>
-            <input type="text" id="role" placeholder="Ex: TEAM LEADER">
-        </div>
-        <div class="field">
-            <label>LEADER CODE</label>
-            <input type="text" id="code" placeholder="Ex: RU-12345">
-        </div>
-        <div class="field">
-            <label>PHONE NUMBER</label>
-            <input type="text" id="phone" placeholder="Ex: +91 98765 43210">
-        </div>
-        <div class="field">
-            <label>DATE OF JOIN</label>
-            <input type="text" id="date" placeholder="Ex: 12 Jan 2026">
-        </div>
+    <div class="box">
+        <h2>RISE UP ID</h2>
+        <input type="text" id="name" placeholder="Full Name">
+        <input type="text" id="role" placeholder="Role (e.g. TEAM LEADER)">
+        <input type="text" id="code" placeholder="Leader Code">
+        <input type="text" id="phone" placeholder="Phone Number">
+        <input type="text" id="date" placeholder="Date of Join">
 
-        <div class="btn-box">
-            <button class="gen-btn" onclick="generate()">GENERATE ID CARD</button>
-            <button class="dl-btn" id="dlBtn" onclick="download()">DOWNLOAD IMAGE</button>
-        </div>
+        <button class="btn-gen" onclick="generate()">GENERATE ID CARD</button>
+        <button id="dlBtn" class="btn-dl" onclick="download()">DOWNLOAD IMAGE</button>
 
-        <div id="previewContainer">
-            <canvas id="cardCanvas"></canvas>
-            <p id="hintText" class="hint">Preview will appear here</p>
-        </div>
+        <canvas id="cardCanvas"></canvas>
     </div>
 
     <script>
         const canvas = document.getElementById('cardCanvas');
         const ctx = canvas.getContext('2d');
-        const template = new Image();
-        template.crossOrigin = "anonymous";
-        // Wahi image link jo tumne bheja tha
-        template.src = 'https://i.ibb.co/FqchQ1g6/RISE-UP-20260111-215123-0000.png';
+        const img = new Image();
+        img.crossOrigin = "anonymous";
+        // Teri template ka direct link
+        img.src = 'https://i.ibb.co/FqchQ1g6/RISE-UP-20260111-215123-0000.png';
 
         function generate() {
-            // Set HD Resolution
-            canvas.width = template.width;
-            canvas.height = template.height;
+            // Asli image size pe canvas set karna
+            canvas.width = img.naturalWidth;
+            canvas.height = img.naturalHeight;
 
-            // Draw Base
-            ctx.drawImage(template, 0, 0);
+            // Draw Background
+            ctx.drawImage(img, 0, 0);
 
-            // Data
-            const name = (document.getElementById('name').value || "MEMBER NAME").toUpperCase();
-            const role = (document.getElementById('role').value || "ROLE").toUpperCase();
-            const code = document.getElementById('code').value || "XXXXX";
-            const phone = document.getElementById('phone').value || "XXXXXXXXXX";
-            const date = document.getElementById('date').value || "DD-MM-YYYY";
+            // Get Values
+            const name = document.getElementById('name').value.toUpperCase();
+            const role = document.getElementById('role').value.toUpperCase();
+            const code = document.getElementById('code').value;
+            const phone = document.getElementById('phone').value;
+            const date = document.getElementById('date').value;
 
-            const centerX = canvas.width / 2;
+            const W = canvas.width;
 
-            // 1. NAME - Box ke ekdum center mein (White space center)
-            ctx.fillStyle = "#000000";
+            // 1. NAME - White area ke beech mein
+            ctx.fillStyle = "black";
             ctx.textAlign = "center";
-            ctx.font = "bold 65px Arial"; 
-            ctx.fillText(name, centerX, 610); 
+            ctx.font = "bold 60px Arial";
+            ctx.fillText(name, W / 2, 615); 
 
-            // 2. ROLE - Green Ribbon ke center mein
-            ctx.fillStyle = "#ffffff";
-            ctx.font = "bold 40px Arial";
-            ctx.fillText(role, centerX, 695); 
+            // 2. ROLE - Green ribbon ke beech mein
+            ctx.fillStyle = "white";
+            ctx.font = "bold 38px Arial";
+            ctx.fillText(role, W / 2, 698);
 
-            // 3. DETAILS - Left aligned but shifted for visual balance
+            // 3. DETAILS - Left align
             ctx.textAlign = "left";
-            ctx.fillStyle = "#000000";
-            ctx.font = "700 36px Arial";
+            ctx.fillStyle = "black";
+            ctx.font = "bold 34px Arial";
+            const startX = W * 0.15; // 15% margin from left
 
-            const infoX = 145; // Alignment from left margin
-            ctx.fillText("Leader code : " + code, infoX, 795);
-            ctx.fillText("PHONE       : " + phone, infoX, 855);
-            ctx.fillText("Date of join : " + date, infoX, 915);
+            ctx.fillText("Leader code : " + code, startX, 805);
+            ctx.fillText("PHONE       : " + phone, startX, 865);
+            ctx.fillText("Date of join : " + date, startX, 925);
 
             // Show UI
             canvas.style.display = "block";
             document.getElementById('dlBtn').style.display = "block";
-            document.getElementById('hintText').innerText = "Looks perfect! Click download below.";
-            
-            // Scroll to preview on mobile
-            canvas.scrollIntoView({ behavior: 'smooth' });
         }
 
         function download() {
             const link = document.createElement('a');
-            link.download = 'RiseUp_ID.png';
-            link.href = canvas.toDataURL('image/png', 1.0);
+            link.download = 'My_ID_Card.png';
+            link.href = canvas.toDataURL();
             link.click();
         }
     </script>
