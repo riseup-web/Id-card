@@ -46,10 +46,10 @@
             letter-spacing: 0.5px;
         }
 
-        /* ROLE: Centered on the Green Ribbon */
+        /* ROLE: Adjusted slightly lower to center on Ribbon */
         #outRole {
             position: absolute;
-            top: 432px; 
+            top: 438px; /* Pehle 432px tha, ab 438px kar diya hai */
             left: 50%;
             transform: translateX(-50%);
             width: 100%;
@@ -126,7 +126,6 @@
         const { jsPDF } = window.jspdf;
         const card = document.getElementById('id-card');
         
-        // High quality rendering
         html2canvas(card, { 
             scale: 4, 
             useCORS: true,
