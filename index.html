@@ -31,20 +31,20 @@ body {
   margin-bottom: 15px;
 }
 
-input {
-  background: #2a2a2a !important;
-  color: #fff !important;
-  border: 1px solid #444 !important;
+input, button {
+  background: #2a2a2a;
+  color: #fff;
+  border: 1px solid #444;
   margin-bottom: 10px;
+  width: 100%;
+  padding: 10px;
+  border-radius: 10px;
 }
 
 button {
   background: var(--green);
-  border: none;
-  width: 100%;
-  padding: 12px;
   font-weight: bold;
-  border-radius: 10px;
+  border: none;
 }
 
 #id-card {
@@ -86,7 +86,7 @@ button {
 
 #back-preview {
   width: 360px;
-  display: block;
+  display: none;
   margin: 10px auto;
   border: 1px solid #333;
 }
@@ -98,11 +98,16 @@ button {
 
   <div class="box">
     <h5 class="text-success text-center mb-3">Rise Up ID Generator</h5>
-    <input id="inName" class="form-control" placeholder="Full Name" oninput="update()">
-    <input id="inRole" class="form-control" placeholder="Role" oninput="update()">
-    <input id="inCode" class="form-control" placeholder="Leader Code" oninput="update()">
-    <input id="inPhone" class="form-control" placeholder="Phone" oninput="update()">
-    <input id="inDate" class="form-control" placeholder="Date of Join" oninput="update()">
+
+    <input id="inName" placeholder="Full Name" oninput="update()">
+    <input id="inRole" placeholder="Role" oninput="update()">
+    <input id="inCode" placeholder="Leader Code" oninput="update()">
+    <input id="inPhone" placeholder="Phone" oninput="update()">
+    <input id="inDate" placeholder="Date of Join" oninput="update()">
+
+    <label class="text-success mt-2">Upload Instructions Image (Page 2)</label>
+    <input type="file" accept="image/*" onchange="loadBackImage(event)">
+
     <button onclick="downloadPDF()">Download PDF</button>
   </div>
 
@@ -117,14 +122,13 @@ button {
     </div>
   </div>
 
-  <p class="text-success text-center mt-3 fw-bold">Page 2: Instructions</p>
-
-  <img id="back-preview" crossorigin="anonymous"
-    src="https://i.ibb.co/GQy6BGgn/Blue-and-White-Modern-Professional-Company-ID-Card-20260112-134859-0001.png">
+  <img id="back-preview">
 
 </div>
 
 <script>
+let backImageBase64 = null;
+
 function update() {
   outName.innerText = inName.value || "NAME HERE";
   outRole.innerText = inRole.value || "ROLE";
@@ -133,30 +137,37 @@ function update() {
   outDate.innerText = inDate.value;
 }
 
+function loadBackImage(event) {
+  const file = event.target.files[0];
+  if (!file) return;
+
+  const reader = new FileReader();
+  reader.onload = function() {
+    backImageBase64 = reader.result;
+    const img = document.getElementById("back-preview");
+    img.src = backImageBase64;
+    img.style.display = "block";
+  };
+  reader.readAsDataURL(file);
+}
+
 async function downloadPDF() {
+  if (!backImageBase64) {
+    alert("Please upload instructions image first");
+    return;
+  }
+
   const { jsPDF } = window.jspdf;
 
-  // FRONT render
   const front = document.getElementById("id-card");
   const frontCanvas = await html2canvas(front, { scale: 5, useCORS: true });
   const frontImg = frontCanvas.toDataURL("image/png", 1.0);
-
-  // BACK original fetch (no blur method)
-  const backUrl = document.getElementById("back-preview").src;
-  const res = await fetch(backUrl, { mode: "cors" });
-  const blob = await res.blob();
-
-  const backBase64 = await new Promise(resolve => {
-    const reader = new FileReader();
-    reader.onloadend = () => resolve(reader.result);
-    reader.readAsDataURL(blob);
-  });
 
   const pdf = new jsPDF({ unit: "px", format: [360, 640] });
 
   pdf.addImage(frontImg, "PNG", 0, 0, 360, 640);
   pdf.addPage([360, 640]);
-  pdf.addImage(backBase64, "PNG", 0, 0, 360, 640);
+  pdf.addImage(backImageBase64, "PNG", 0, 0, 360, 640);
 
   pdf.save("Rise Up ID Card.pdf");
 }
