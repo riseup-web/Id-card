@@ -105,10 +105,11 @@ button {
     <input id="inPhone" placeholder="Phone" oninput="update()">
     <input id="inDate" placeholder="Date of Join" oninput="update()">
 
-    <label class="text-success mt-2">Upload Instructions Image (Page 2)</label>
+    <label class="text-success">Upload Instructions Image (Only once)</label>
     <input type="file" accept="image/*" onchange="loadBackImage(event)">
 
     <button onclick="downloadPDF()">Download PDF</button>
+    <button onclick="sharePDF()">Share PDF</button>
   </div>
 
   <div id="id-card">
@@ -127,7 +128,13 @@ button {
 </div>
 
 <script>
-let backImageBase64 = null;
+let backImageBase64 = localStorage.getItem("backImage") || null;
+
+if (backImageBase64) {
+  const img = document.getElementById("back-preview");
+  img.src = backImageBase64;
+  img.style.display = "block";
+}
 
 function update() {
   outName.innerText = inName.value || "NAME HERE";
@@ -144,6 +151,8 @@ function loadBackImage(event) {
   const reader = new FileReader();
   reader.onload = function() {
     backImageBase64 = reader.result;
+    localStorage.setItem("backImage", backImageBase64);
+
     const img = document.getElementById("back-preview");
     img.src = backImageBase64;
     img.style.display = "block";
@@ -151,10 +160,10 @@ function loadBackImage(event) {
   reader.readAsDataURL(file);
 }
 
-async function downloadPDF() {
+async function generatePDFBlob() {
   if (!backImageBase64) {
     alert("Please upload instructions image first");
-    return;
+    return null;
   }
 
   const { jsPDF } = window.jspdf;
@@ -164,12 +173,38 @@ async function downloadPDF() {
   const frontImg = frontCanvas.toDataURL("image/png", 1.0);
 
   const pdf = new jsPDF({ unit: "px", format: [360, 640] });
-
   pdf.addImage(frontImg, "PNG", 0, 0, 360, 640);
   pdf.addPage([360, 640]);
   pdf.addImage(backImageBase64, "PNG", 0, 0, 360, 640);
 
-  pdf.save("Rise Up ID Card.pdf");
+  return pdf.output("blob");
+}
+
+async function downloadPDF() {
+  const blob = await generatePDFBlob();
+  if (!blob) return;
+
+  const link = document.createElement("a");
+  link.href = URL.createObjectURL(blob);
+  link.download = "Rise Up ID Card.pdf";
+  link.click();
+}
+
+async function sharePDF() {
+  const blob = await generatePDFBlob();
+  if (!blob) return;
+
+  const file = new File([blob], "Rise Up ID Card.pdf", { type: "application/pdf" });
+
+  if (navigator.share) {
+    await navigator.share({
+      files: [file],
+      title: "Rise Up ID Card",
+      text: "Here is the ID card PDF"
+    });
+  } else {
+    alert("Share not supported on this device. Use Download instead.");
+  }
 }
 </script>
 
