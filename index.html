@@ -3,10 +3,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Rise Up | Official ID Generator</title>
+    <title>Rise Up | Official PDF Generator</title>
     
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@700&family=Roboto:wght@400;700;900&display=swap" rel="stylesheet">
 
     <style>
@@ -20,19 +21,16 @@
             font-family: 'Roboto', sans-serif;
             color: white;
             padding: 20px 0;
-            margin: 0;
             display: flex;
             flex-direction: column;
-            align-items: center; /* Pura content center karne ke liye */
+            align-items: center;
         }
 
         .main-container {
             width: 100%;
             max-width: 400px;
             padding: 10px;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
+            text-align: center;
         }
 
         .form-card {
@@ -41,7 +39,6 @@
             border-radius: 15px;
             box-shadow: 0 10px 30px rgba(0,0,0,0.5);
             margin-bottom: 25px;
-            width: 100%;
         }
 
         .form-control {
@@ -61,84 +58,74 @@
             width: 100%;
         }
 
-        /* ID CARD PREVIEW - CENTERED & PIXEL PERFECT */
+        /* ID CARD DESIGN */
         #id-card {
             width: 360px;
             height: 640px;
             position: relative;
-            border-radius: 12px;
+            border-radius: 8px;
             overflow: hidden;
             background: url('https://i.ibb.co/BKcfrcVm/card-png.png') no-repeat center center;
             background-size: 100% 100%;
-            /* Shadow effect */
-            box-shadow: 0 10px 40px rgba(0,0,0,0.8);
-            flex-shrink: 0; /* Card ko chhota hone se rokne ke liye */
+            margin: 0 auto;
         }
 
         .overlay-layer {
             position: absolute;
             width: 100%;
             height: 100%;
-            z-index: 10;
             display: flex;
             flex-direction: column;
             align-items: center;
             pointer-events: none;
         }
 
-        /* Naam styling */
+        /* Naam Fix: Adjusted position and spacing */
         #outName {
-            margin-top: 350px;
+            margin-top: 365px; /* Thoda neeche kiya hai taaki hexagon se door rahe */
             font-family: 'Oswald', sans-serif;
-            font-size: 40px;
+            font-size: 38px;
             color: #000000;
             text-transform: uppercase;
             font-weight: 700;
-            text-align: center;
-            width: 100%;
+            width: 90%;
+            line-height: 1;
+            letter-spacing: -0.5px;
         }
 
-        /* Role: Asli Ribbon ke upar perfectly aligned */
+        /* Role: Ribbon position */
         #outRole {
-            margin-top: 25px;
+            margin-top: 22px;
             color: #ffffff;
             font-size: 18px;
             font-weight: 900;
             text-transform: uppercase;
-            text-align: center;
-            width: 100%;
             letter-spacing: 1px;
-            text-shadow: 1px 1px 2px rgba(0,0,0,0.5);
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.4);
         }
 
-        /* Details Section: Visibility fixed */
+        /* Details section */
         .details-section {
-            margin-top: 58px;
+            margin-top: 55px;
             width: 82%;
             color: #000000;
             font-size: 18px;
             font-weight: 800;
-            line-height: 1.6;
+            text-align: left;
         }
 
         .d-row {
             display: flex;
-            align-items: center;
-            margin-bottom: 1px;
+            margin-bottom: 2px;
         }
 
-        .d-label {
-            width: 120px;
-        }
-
-        .d-sep {
-            margin: 0 10px;
-        }
+        .d-label { width: 125px; }
+        .d-sep { margin: 0 10px; }
 
         .validity-text {
             position: absolute;
             bottom: 12px;
-            right: 18px;
+            right: 20px;
             color: #ffffff;
             font-size: 11px;
             font-weight: bold;
@@ -149,17 +136,15 @@
 
 <div class="main-container">
     <div class="form-card">
-        <h4 class="text-center mb-4" style="color: var(--primary-green)">ID Generator</h4>
+        <h4 class="mb-4" style="color: var(--primary-green)">RISE UP PDF GEN</h4>
         <input type="text" id="inName" class="form-control" placeholder="Full Name" oninput="update()">
         <input type="text" id="inRole" class="form-control" placeholder="Role (e.g. MANAGER)" oninput="update()">
         <input type="text" id="inCode" class="form-control" placeholder="Leader Code" oninput="update()">
         <input type="text" id="inPhone" class="form-control" placeholder="Phone Number" oninput="update()">
         <input type="text" id="inDate" class="form-control" placeholder="Date of Join" oninput="update()">
         
-        <button class="btn btn-generate" onclick="downloadID()">Download HD PNG</button>
+        <button class="btn btn-generate" onclick="downloadPDF()">Download Official PDF</button>
     </div>
-
-    <p style="color: #666; font-size: 12px; margin-bottom: 10px;">PREVIEW BELOW</p>
 
     <div id="id-card">
         <div class="overlay-layer">
@@ -185,17 +170,23 @@
         document.getElementById('outPhone').innerText = document.getElementById('inPhone').value;
     }
 
-    function downloadID() {
+    async function downloadPDF() {
+        const { jsPDF } = window.jspdf;
         const card = document.getElementById('id-card');
-        html2canvas(card, { 
-            useCORS: true, 
-            scale: 4, 
-            backgroundColor: null 
-        }).then(canvas => {
-            const link = document.createElement('a');
-            link.download = 'RiseUp_ID_' + (document.getElementById('inName').value || 'Card') + '.png';
-            link.href = canvas.toDataURL("image/png");
-            link.click();
+        
+        // Quality high rakhne ke liye scale 3 use kiya hai
+        html2canvas(card, { scale: 3, useCORS: true }).then(canvas => {
+            const imgData = canvas.toDataURL('image/png');
+            
+            // PDF size (vertical ID card ke liye)
+            const pdf = new jsPDF({
+                orientation: 'p',
+                unit: 'px',
+                format: [360, 640]
+            });
+
+            pdf.addImage(imgData, 'PNG', 0, 0, 360, 640);
+            pdf.save(`RiseUp_ID_${document.getElementById('inName').value || 'User'}.pdf`);
         });
     }
 </script>
